@@ -1,10 +1,10 @@
 use serde::{Deserialize, Serialize};
-use std::fs::*;
-use std::io::{Read, BufReader};
-use std::io::prelude::*;
-use std::io;
-use std::path::{Path, PathBuf};
 use std::collections::HashMap;
+use std::fs::*;
+use std::io;
+use std::io::prelude::*;
+use std::io::{BufReader, Read};
+use std::path::{Path, PathBuf};
 
 use flate2::read::GzDecoder;
 
@@ -97,7 +97,7 @@ pub struct EqClass {
     pub count: u32,
 }
 
-#[derive(Debug)] 
+#[derive(Debug)]
 pub struct EqClassView<'a> {
     pub labels: &'a [usize],
     pub weights: &'a [f64],
@@ -159,11 +159,10 @@ impl EqClassList {
         }
     }
 
-    pub fn get(&self, i: usize) -> Option<EqClassView>{
+    pub fn get(&self, i: usize) -> Option<EqClassView> {
         if i + 1 >= self.offsets.len() {
             None
-        }
-        else {
+        } else {
             let p = self.offsets[i];
             let l = self.offsets[(i + 1)] - p;
             Some(EqClassView {
@@ -184,7 +183,6 @@ pub struct EqClassCollection {
 }
 
 impl EqClassCollection {
-
     // /// Add an equivalence class to the set of equivalence classes for this experiment
     // pub fn push(&mut self, ec: EqClass) {
     //     self.classes.push(ec);
@@ -262,7 +260,7 @@ impl EqClassCollection {
             }
             let c: u32 = iter.next().unwrap().parse().unwrap();
 
-            let ec = EqClass{
+            let ec = EqClass {
                 labels: tv,
                 weights: wv,
                 count: c,
@@ -274,7 +272,7 @@ impl EqClassCollection {
         Ok(exp)
     }
 
-    pub fn get(&self, i: usize) -> Option<EqClassView>{
+    pub fn get(&self, i: usize) -> Option<EqClassView> {
         self.classes.get(i)
     }
 }
@@ -320,7 +318,9 @@ pub struct QuantEntry {
 /*******************************************************************************/
 
 pub trait FromPathExt {
-    fn from_path<P: AsRef<Path>>(p: P) -> Result<Self, csv::Error> where Self: Sized;
+    fn from_path<P: AsRef<Path>>(p: P) -> Result<Self, csv::Error>
+    where
+        Self: Sized;
 }
 
 impl FromPathExt for HashMap<String, QuantEntry> {
@@ -330,9 +330,9 @@ impl FromPathExt for HashMap<String, QuantEntry> {
         let mut rdr = csv::ReaderBuilder::new()
             .delimiter(b'\t')
             .from_reader(file.unwrap());
-    
+
         let mut quant_map = HashMap::new();
-    
+
         for quant_record in rdr.deserialize() {
             let quant_record: QuantRecord = quant_record?;
             let quant_entry = QuantEntry {
@@ -341,10 +341,10 @@ impl FromPathExt for HashMap<String, QuantEntry> {
                 tpm: quant_record.tpm,
                 num_reads: quant_record.num_reads,
             };
-    
+
             quant_map.insert(quant_record.name.to_string(), quant_entry);
         }
-    
+
         Ok(quant_map)
     }
 }
@@ -360,7 +360,7 @@ mod tests {
         assert!(ecs.is_empty());
 
         let ec = EqClass {
-            labels: vec![0,1,2],
+            labels: vec![0, 1, 2],
             weights: vec![0.2, 0.3, 0.5],
             count: 15,
         };
@@ -372,7 +372,7 @@ mod tests {
         assert!(ecs.get(1).is_none());
 
         let ec = ecs.get(0).unwrap();
-        assert_eq!(ec.labels, vec![0,1,2]);
+        assert_eq!(ec.labels, vec![0, 1, 2]);
         assert_eq!(ec.weights, vec![0.2, 0.3, 0.5]);
         assert_eq!(ec.count, 15);
     }
