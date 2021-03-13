@@ -121,8 +121,9 @@ pub struct IterEqClassList<'a> {
 impl<'a> Iterator for IterEqClassList<'a> {
     type Item = EqClassView<'a>;
     fn next(&mut self) -> Option<Self::Item> {
+        let ec = self.inner.get(self.pos);
         self.pos += 1;
-        self.inner.get(self.pos)
+        return ec;
     }
 }
 
@@ -370,6 +371,12 @@ mod tests {
         assert_eq!(ecs.len(), 1);
 
         assert!(ecs.get(1).is_none());
+
+        let mut n = 0;
+        for _ in ecs.iter() {
+            n += 1;
+        }
+        assert_eq!(n, ecs.len());
 
         let ec = ecs.get(0).unwrap();
         assert_eq!(ec.labels, vec![0, 1, 2]);
