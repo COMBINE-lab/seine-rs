@@ -201,7 +201,7 @@ impl EqClassCollection {
     pub fn from_path<P: AsRef<Path>>(filename: &P) -> Result<EqClassCollection, io::Error> {
         let filename = filename.as_ref();
         let file = File::open(filename).expect("equivalence class file does not exist");
-        let reader: Box<dyn Read> = if filename.ends_with("eq_classes.txt.gz") {
+        let reader: Box<dyn Read> = if filename.ends_with(".gz") {
             Box::new(GzDecoder::new(file))
         } else {
             Box::new(file)
